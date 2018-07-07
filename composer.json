@@ -1,0 +1,35 @@
+{
+    "name": "dotburo/pow-framework",
+    "type": "project",
+    "description": "Core package for Pow - a WordPress application framework",
+    "keywords": [
+        "wordpress", "wp", "wordpress-boilerplate", "wordpress-starter-theme"
+    ],
+    "homepage": "https://github.com/dotburo/pow-framework",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "dotburo",
+            "email": "hello@dotburo.org",
+            "homepage": "https://dotburo.org/pow"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/dotburo/pow-framework/issues"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1",
+        "vlucas/phpdotenv": "~2.2",
+        "philo/laravel-blade": "3.*"
+    },
+    "autoload": {
+        "files": [
+            "src/Helpers/helpers.php"
+        ],
+        "psr-4": {
+            "Pow\\" : "src/"
+        }
+    }
+}
