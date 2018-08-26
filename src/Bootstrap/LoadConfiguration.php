@@ -86,7 +86,7 @@ class LoadConfiguration implements Bootstrap
             if (!$loaded) $this->load($file);
         }
 
-        # Finish up by applying the configuration for the current side
+        # Apply the configuration for the current side
         if ($wp_side === 'site' && $this->app->pagenow !== 'wp-login.php') {
             new ConfigureSite($app);
         } else if ($wp_side === 'admin' && !doingPowAjax()) {

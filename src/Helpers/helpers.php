@@ -122,3 +122,26 @@ if (!function_exists('splitPriority')) {
         return explode(':', $hook);
     }
 }
+
+if (!function_exists('removeMetaBox')) {
+    /**
+     * Remove a meta box from an admin edit screen
+     *
+     * @param string $postType
+     * @param string|array $names
+     * @param string $side
+     * @return void
+     */
+    function removeMetaBoxes(string $postType, $names, string $side = 'normal')
+    {
+        add_action('admin_head', function () use ($postType, $names, $side) {
+            if (is_array($names)) {
+                array_walk($names, function ($name) use ($postType, $side) {
+                    remove_meta_box($name, $postType, $side);
+                });
+            } else {
+                remove_meta_box($names, $postType, $side);
+            }
+        }, PHP_INT_MAX, 0);
+    }
+}

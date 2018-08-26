@@ -61,6 +61,30 @@ class Repository implements ArrayAccess
     }
 
     /**
+     * Get a directory
+     *
+     * @param string|null $key
+     * @param string $append
+     * @return string
+     */
+    public function dir(string $key = null, string $append = '')
+    {
+        return Arr::get($this->items, $key ? "dir_$key" : 'dir') . $append;
+    }
+
+    /**
+     * Get an url
+     *
+     * @param string|null $key
+     * @param string $append
+     * @return string
+     */
+    public function url(string $key = null, string $append = '')
+    {
+        return Arr::get($this->items, $key ? "url_$key" : 'url') . $append;
+    }
+
+    /**
      * Get many configuration values.
      *
      * @param  array  $keys

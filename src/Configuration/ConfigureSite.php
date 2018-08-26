@@ -10,19 +10,20 @@ use Pow\Pow;
  * @version 0.0.0
  * @since 0.0.0
  */
-class ConfigureSite
+class ConfigureSite extends Configure
 {
     /**
-     * Cherry pick config options and call related methods
-     *
+     * @inheritdoc
      * @param Pow $app
      */
     public function __construct(Pow $app)
     {
-        $config = $app['config']->get('site');
+        parent::__construct($app);
 
-        if (!empty($config['theme_support']))
-            $this->addThemeSupport($config['theme_support']);
+        if (!empty($this->settings->has('main.toolbar')))
+            add_action('admin_bar_menu', [$this, 'admin_bar_menu'], static::INT_MAX, 1);
+
+        $config = $this->settings->get('site');
 
         if (!($config['emoji'] ?? false))
             $this->disableEmoji();
@@ -38,6 +39,23 @@ class ConfigureSite
 
         if (!empty($config['shortcodes']))
             $this->addShortCodes($config['shortcodes']);
+
+        # Can hide the toolbar even if user chose to display it
+        show_admin_bar(!$config['force_hide_toolbar']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
+        parent::init();
+
+        # If we do not use themes, this action hook needs to be called manually,
+        # so it triggers subsequent action for displaying the toolbar and outputting wp_head things.
+        if (!WP_USE_THEMES) {
+            do_action('template_redirect');
+        }
     }
 
     /**
@@ -70,25 +88,6 @@ class ConfigureSite
 
         # oEmbed host javascript
         remove_action('wp_head', 'wp_oembed_add_host_js');
-    }
-
-    /**
-     * Enable theme support
-     *
-     * @see https://developer.wordpress.org/reference/functions/add_theme_support/
-     * @param array $support
-     * @return void
-     */
-    public function addThemeSupport(array $support): void
-    {
-        add_action('after_theme_setup', function() use ($support) {
-            array_walk($support, function ($args, $feature) {
-                if ($args === true)
-                    add_theme_support($feature);
-                elseif (is_array($args))
-                    add_theme_support($feature, ...$args);
-            });
-        }, PHP_INT_MAX);
     }
 
     /**
@@ -131,5 +130,24 @@ class ConfigureSite
         array_walk($codes, function (string $class, string $name) {
             if (class_exists($class)) add_shortcode($name, [$class, 'handle']);
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function admin_bar_menu(\WP_Admin_Bar $wp_admin_bar): array
+    {
+        $config = parent::admin_bar_menu($wp_admin_bar);
+
+        # Remove search item
+        if (!$config['search']) {
+            $wp_admin_bar->remove_node('search');
+        }
+
+        if (!WP_USE_THEMES) {
+            $wp_admin_bar->remove_node('themes');
+        }
+
+        return $config;
     }
 }

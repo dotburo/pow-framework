@@ -140,7 +140,7 @@ class Pow extends Container
 
         if ($echo) {
             echo $rendered;
-            exit();
+            return;
         }
 
         return $rendered;
